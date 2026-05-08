@@ -1,0 +1,6 @@
+flask
+streamlit
+pytest
+ruff
+pyright
+requests
