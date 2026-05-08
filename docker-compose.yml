@@ -1,0 +1,22 @@
+services:
+  backend:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -c "pip install --no-cache-dir -r backend/requirements.txt && python -m backend.main"
+    ports:
+      - "5000:5000"
+
+  frontend:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -c "pip install --no-cache-dir streamlit requests && streamlit run frontend/app.py --server.address=0.0.0.0 --server.port=8501"
+    environment:
+      - API_BASE=http://backend:5000
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
