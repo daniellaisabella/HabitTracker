@@ -1,9 +1,14 @@
+# .pre-commit-config.yaml
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.4  # Use the latest stable version
+    rev: v0.3.4
     hooks:
       - id: ruff
-  - repo: https://github.com/pre-commit/mirrors-pyright
-    rev: v1.1.357  # Use the latest stable version
+        args: [--fix]
+  - repo: local
     hooks:
-      - id: pyright
+      - id: pytest
+        name: Run tests
+        entry: uv run pytest
+        language: system
+        pass_filenames: false

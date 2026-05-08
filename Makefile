@@ -37,7 +37,7 @@ run:
 	@Write-Host "Frontend started on http://localhost:8501"
 
 docker-up:
-	@docker compose up --build
+	@docker compose up
 
 docker-build:
 	@Write-Host "Pulling/updating images from registry..."
@@ -52,3 +52,19 @@ docker-logs:
 
 docker-ps:
 	@docker compose ps
+
+
+
+lint:
+	uv run ruff check --fix .
+
+test:
+	uv run pytest backend/tests
+
+typecheck:
+	uv run pyright
+
+pre-commit-hooks:
+	uv add --dev pre-commit ruff pytest pyright
+	uv run pre-commit install
+	@echo "pre-commit hooks installed and ready!"

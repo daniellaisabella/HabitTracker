@@ -1,0 +1,16 @@
+[project]
+name = "habit-tracker"
+version = "0.1.0"
+description = "A habit tracker app"
+requires-python = ">=3.11"
+
+[tool.uv]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.0",
+    "pyright>=1.1.409",
+    "pytest>=9.0.3",
+    "ruff>=0.15.12",
+]
+# uv-specific settings can go here
