@@ -1,58 +1,14 @@
 # Habit Tracker Web Application
 
-## Local Development Setup (.venv)
-1. Create and activate a virtual environment:
-	```bash
-	python -m venv .venv
-	.venv\Scripts\activate  # Windows
-	# or
-	source .venv/bin/activate  # macOS/Linux
-	```
-2. Install dependencies:
-	```bash
-	pip install -r requirements.txt
-	```
-3. (Optional) Use `uv` for modern dependency management.
+This is a web application for tracking habits, built with a Python backend (Flask) and a Streamlit frontend.
 
-## Pre-commit Hooks
-Set up pre-commit hooks to enforce code quality before each commit:
-```bash
-make pre-commit-setup
-```
-This installs and activates hooks for ruff, pytest, and pyright.
+## Features
+- Track daily habits and entries
+- User management
+- Modern Python tooling (uv, ruff, pytest, pyright, pre-commit)
+- Dockerized for easy deployment
 
-
-## Linting
-Run ruff to check and auto-fix code style:
-```bash
-make lint
-```
-
-## Testing
-Run all unit tests with pytest:
-```bash
-make test
-```
-
-## Type Checking
-Run static type checks with pyright:
-```bash
-make typecheck
-```
-
-
-## Deployment (Docker)
-1. Build and start services:
-	```bash
-	make docker-build
-	make docker-up
-	```
-2. Stop services:
-	```bash
-	make docker-down
-	```
-
----
-For more details, see comments in the Makefile and docker-compose.yml.
+## Quick Start
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, development, and contribution instructions.
 
 
