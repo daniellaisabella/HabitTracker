@@ -12,3 +12,10 @@ repos:
         entry: uv run pytest
         language: system
         pass_filenames: false
+  - repo: local
+    hooks:
+    - id: pyright
+      name: Run pyright type checking
+      entry: uv run pyright
+      language: system
+      pass_filenames: false
