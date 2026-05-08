@@ -29,7 +29,7 @@ frontend:
 	@if (-not (Test-Path "$(PYTHON)")) { throw "Missing .venv. Create it first: python -m venv .venv" }
 	@& "$(PYTHON)" -m streamlit run frontend/app.py
 
-run:
+run-local:
 	@if (-not (Test-Path "$(PYTHON)")) { throw "Missing .venv. Create it first: python -m venv .venv" }
 	@Start-Process -FilePath "$(PYTHON)" -ArgumentList "-m","backend.main"
 	@Start-Process -FilePath "$(PYTHON)" -ArgumentList "-m","streamlit","run","frontend/app.py"

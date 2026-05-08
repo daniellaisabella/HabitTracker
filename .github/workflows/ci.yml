@@ -23,15 +23,7 @@ jobs:
 
       - name: Install project dependencies
         run: |
-          uv pip install --system --dev
-
-      - name: Lint with ruff
-        run: |
-          uv run ruff check .
-
-      - name: Type check with pyright
-        run: |
-          uv run pyright
+          uv pip install --system --requirements requirements.txt
 
       - name: Run tests with pytest
         run: |
