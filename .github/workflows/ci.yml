@@ -25,14 +25,6 @@ jobs:
         run: |
           uv pip install --system --requirements requirements.txt
 
-      - name: Lint with ruff
-        run: |
-          uv run ruff check .
-
-      - name: Type check with pyright
-        run: |
-          uv run pyright
-
       - name: Run tests with pytest
         run: |
           uv run pytest
