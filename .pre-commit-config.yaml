@@ -1,0 +1,9 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4  # Use the latest stable version
+    hooks:
+      - id: ruff
+  - repo: https://github.com/pre-commit/mirrors-pyright
+    rev: v1.1.357  # Use the latest stable version
+    hooks:
+      - id: pyright
