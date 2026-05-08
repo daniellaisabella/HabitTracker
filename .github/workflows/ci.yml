@@ -23,7 +23,7 @@ jobs:
 
       - name: Install project dependencies
         run: |
-          uv pip install --system
+          uv pip install --system --requirements requirements.txt
 
       - name: Lint with ruff
         run: |
