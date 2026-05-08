@@ -61,16 +61,6 @@ def register_routes(app: Flask) -> None:
         return jsonify(habit.__dict__), 201
 
     # Delete habit endpoint
-    @app.delete("/habits/<int:habit_id>")
-    def delete_habit(habit_id: int):
-        # Find the habit by id and remove it if present.
-        for index, habit in enumerate(habits):
-            if habit.id == habit_id:
-                del habits[index]
-                # Also delete entries tied to this habit.
-                entries[:] = [entry for entry in entries if entry.habit_id != habit_id]
-                return "", 204
-        return jsonify({"error": "Habit not found"}), 404
 
     # Create a new habit entry endpoint
     @app.post("/habit_entries")
