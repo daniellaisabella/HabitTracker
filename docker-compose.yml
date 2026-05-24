@@ -1,5 +1,9 @@
 services:
   backend:
+    depends_on:
+      - db
+    env_file:
+      - .env
     image: python:3.11-slim
     working_dir: /app
     volumes:
@@ -9,6 +13,8 @@ services:
       - "5000:5000"
 
   frontend:
+    depends_on:
+      - backend
     image: python:3.11-slim
     working_dir: /app
     volumes:
@@ -18,8 +24,6 @@ services:
       - API_BASE=http://backend:5000
     ports:
       - "8501:8501"
-    depends_on:
-      - backend
 
   db:
     image: postgres:14
