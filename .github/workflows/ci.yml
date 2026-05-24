@@ -23,7 +23,7 @@ jobs:
 
       - name: Install project dependencies
         run: |
-          uv pip install --system --requirements requirements.txt
+          uv pip install --system --requirements backend/requirements.txt
 
       - name: Run tests with pytest
         run: |
