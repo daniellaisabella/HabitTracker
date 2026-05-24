@@ -47,14 +47,8 @@ docker-build:
 docker-down:
 	@docker compose down
 
-docker-logs:
-	@docker compose logs -f
-
 docker-ps:
 	@docker compose ps
-
-
-
 lint:
 	uv run ruff check --fix .
 

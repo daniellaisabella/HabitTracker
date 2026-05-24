@@ -2,6 +2,7 @@
 from flask import Flask
 # Import the function that registers routes from the api module
 from backend.api.routes import register_routes
+from backend.models import init_db
 
 # Function to create and configure the Flask app
 def create_app() -> Flask:
@@ -17,6 +18,8 @@ app = create_app()
 
 # Only run the app if this file is executed directly (not imported)
 if __name__ == "__main__":
+    # Init DB (for sikkerhed)
+    init_db()
     # Start the Flask development server
     # debug=True enables debug mode for error messages
     # host="0.0.0.0" makes it accessible from outside the container

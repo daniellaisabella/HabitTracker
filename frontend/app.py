@@ -23,127 +23,83 @@ with open(_css_path) as _f:
 #Page title
 st.title("Changing your lifestyle, day by day 🌱")
 
-# Overview of habits — rendered as card grid
+
+
+# Hent alle habits
 try:
     response = requests.get(f"{API_BASE}/habits")
     if response.status_code == 200:
         habits = response.json()
-        if habits:
-            COLS = 5  # cards per row
-            rows = [habits[i:i+COLS] for i in range(0, len(habits), COLS)]
-            for row in rows:
-                cols = st.columns(COLS)
-                for col, habit in zip(cols, row):
-                    frequency = habit.get("frequency", "daily")
-                    target_days = habit.get("target_days_per_week", 7)
-                    target_amount = habit.get("target_amount", 1.0)
-                    unit = habit.get("unit", "times")
-                    target_text = f"{target_days} days/week" if frequency == "weekly" else "daily"
-                    desc = habit.get("description", "")
-                    with col:
-                        st.html(f"""
-<div class="habit-card">
-  <div class="habit-card-title">{habit['name']}</div>
-  <div class="habit-card-meta">{desc + '<br>' if desc else ''}🗓 {target_text} &bull; 🎯 {target_amount} {unit}</div>
-</div>
-""")
-                        _, delete_col = st.columns([4, 1])
-                        if delete_col.button("✕", key=f"del_habit_{habit['id']}", help="Delete habit"):
-                            try:
-                                delete_response = requests.delete(f"{API_BASE}/habits/{habit['id']}")
-                                if delete_response.status_code == 204:
-                                    st.rerun()
-                                else:
-                                    st.error(f"Failed to delete habit (status {delete_response.status_code})")
-                            except requests.RequestException as e:
-                                st.error(f"Cannot delete habit: {e}")
-        else:
-            st.write("No habits yet")
     else:
         st.error(f"Cannot load habits (status {response.status_code})")
 except requests.RequestException as e:
     st.error(f"Cannot load habits: {e}")
 
+# Hent dagens fuldførte habits
+def get_done_habits():
+    try:
+        # Vi antager at habit_entries ikke har et endpoint for dagens, så vi bruger mark_habit_done og lokal filtrering
+        # Alternativt kunne backend udvides med et endpoint for dagens status
+        # Her antager vi at /habits/missed returnerer alle ikke-fuldførte for de sidste 7 dage, så vi bruger kun /habits og /habits/<habit>/done
+        # For demo: Vi markerer habits som fuldført hvis de har været markeret i dag
+        # Vi laver et endpoint i backend senere hvis nødvendigt
+        return []
+    except Exception:
+        return []
 
-# Add Habit — collapsible expander below the cards
+# Vis habits og mulighed for at markere som fuldført eller slette
+if habits:
+    st.subheader("Your daily goals")
+
+    for habit in habits:
+        cols = st.columns([6, 2, 2])
+
+        with cols[0]:
+            st.markdown(f"**{habit['name']}**")
+
+        with cols[1]:
+            done_key = f"done_{habit['id']}"
+
+            if st.button("✔️ done", key=done_key):
+                try:
+                    r = requests.post(f"{API_BASE}/habits/{habit['name']}/done")
+
+                    if r.status_code == 200:
+                        st.success(f"{habit['name']} markeret som fuldført!")
+                        st.rerun()
+                    else:
+                        st.error("Kunne ikke markere som fuldført")
+                except Exception as e:
+                    st.error(f"Fejl: {e}")
+
+        with cols[2]:
+            del_key = f"del_{habit['id']}"
+
+            if st.button("🗑️", key=del_key):
+                try:
+                    r = requests.delete(f"{API_BASE}/habits/{habit['name']}")
+
+                    if r.status_code == 200:
+                        st.success(f"{habit['name']} slettet!")
+                        st.rerun()
+                    else:
+                        st.error("Kunne ikke slette habit")
+                except Exception as e:
+                    st.error(f"Fejl: {e}")
+else:
+    st.write("Ingen vaner endnu")
+
+# TODO: Visning af dagens fuldførte habits øverst (kræver evt. backend endpoint)
+
+
+# Add Habit — simple form
 with st.expander("➕ Add Habit"):
     with st.form("add_habit"):
         habit_name = st.text_input("What habit do you want to track?", max_chars=50)
-        habit_description = st.text_area("Description")
-        st.write("Weekdays")
-        day_col1, day_col2, day_col3, day_col4, day_col5, day_col6, day_col7 = st.columns(7)
-        monday = day_col1.checkbox("Monday", value=True)
-        tuesday = day_col2.checkbox("Tuesday")
-        wednesday = day_col3.checkbox("Wednesday")
-        thursday = day_col4.checkbox("Thursday")
-        friday = day_col5.checkbox("Friday")
-        saturday = day_col6.checkbox("Saturday")
-        sunday = day_col7.checkbox("Sunday")
-        target_amount = st.slider("Target amount", min_value=0.0, max_value=20.0, value=1.0, step=0.1)
-        st.write("Unit")
-        unit_col1, unit_col2, unit_col3, unit_col4, unit_col5 = st.columns(5)
-        unit_times = unit_col1.checkbox("Times", value=True)
-        unit_hours = unit_col2.checkbox("Hours", value=False)
-        unit_liters = unit_col3.checkbox("Liters", value=False)
-        unit_minutes = unit_col4.checkbox("Minutes", value=False)
-        unit_km = unit_col5.checkbox("Km", value=False)
         submitted = st.form_submit_button("Add Habit")
-
         if submitted and habit_name:
             try:
-                selected_days = []
-                if monday:
-                    selected_days.append("monday")
-                if tuesday:
-                    selected_days.append("tuesday")
-                if wednesday:
-                    selected_days.append("wednesday")
-                if thursday:
-                    selected_days.append("thursday")
-                if friday:
-                    selected_days.append("friday")
-                if saturday:
-                    selected_days.append("saturday")
-                if sunday:
-                    selected_days.append("sunday")
-
-                if not selected_days:
-                    st.error("Choose at least one weekday.")
-                    st.stop()
-
-                selected_units = []
-                if unit_times:
-                    selected_units.append("times")
-                if unit_hours:
-                    selected_units.append("hours")
-                if unit_liters:
-                    selected_units.append("liters")
-                if unit_minutes:
-                    selected_units.append("minutes")
-                if unit_km:
-                    selected_units.append("km")
-
-                if len(selected_units) != 1:
-                    st.error("Choose exactly one unit.")
-                    st.stop()
-
-                frequency = "weekly"
-                target_days_per_week = len(selected_days)
-                unit = selected_units[0]
-
-                response = requests.get(f"{API_BASE}/habits")
-                habits = response.json() if response.status_code == 200 else []
-                next_id = max([h['id'] for h in habits], default=0) + 1
-                payload = {
-                    "id": next_id,
-                    "name": habit_name,
-                    "description": habit_description,
-                    "frequency": frequency,
-                    "target_days_per_week": target_days_per_week,
-                    "target_amount": target_amount,
-                    "unit": unit,
-                }
-                response = requests.post(f"{API_BASE}/habits", json=payload)
+                response = requests.post(f"{API_BASE}/habits", json={"name": habit_name})
                 if response.status_code == 201:
                     st.success("Habit added!")
                     st.rerun()

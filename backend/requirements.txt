@@ -4,3 +4,5 @@ pytest
 ruff
 pyright
 requests
+psycopg2-binary
+sqlalchemy

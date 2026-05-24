@@ -1,92 +1,196 @@
-# Import Flask components for creating the app and handling requests/responses
 from flask import Flask, jsonify, request
-# Import the model classes to create instances
-from backend.models.habit import Habit
-from backend.models.habit_entry import HabitEntry
-from backend.models.user import User
+from datetime import date, timedelta
 
-# In-memory storage for habits (list of Habit objects)
-habits: list[Habit] = []
-# In-memory storage for habit entries (list of HabitEntry objects)
-entries: list[HabitEntry] = []
-# In-memory storage for users (list of User objects)
-users: list[User] = []
 
-# Function to register all API routes with the Flask app
+from backend.models import init_db
+from backend.services.habit_service import HabitService
+
+
 def register_routes(app: Flask) -> None:
-    # Health check endpoint - returns server status
-    @app.get("/health")
-    def health():
-        # Return a simple JSON response indicating the server is running
-        return jsonify({"status": "ok"})
+    init_db()
 
-    # Get all habits endpoint
+    # -------------------------
+    # GET all habits
+    # -------------------------
     @app.get("/habits")
     def get_habits():
-        # Convert each habit object to a dictionary and return as JSON
-        return jsonify([habit.__dict__ for habit in habits])
+        db = SessionLocal()
+        habits = db.query(Habit).all()
+        result = [{"id": h.id, "name": h.name} for h in habits]
+        db.close()
+        return jsonify(result)
 
-    # Get all habit entries endpoint
-    @app.get("/habit_entries")
-    def get_habit_entries():
-        # Convert each entry object to a dictionary and return as JSON
-        return jsonify([entry.__dict__ for entry in entries])
-
-    # Create a new habit endpoint
+    # -------------------------
+    # CREATE habit
+    # -------------------------
     @app.post("/habits")
     def create_habit():
-        # Get the JSON data from the request body
+        db = SessionLocal()
         payload = request.get_json(force=True)
-        frequency = payload.get("frequency", "daily")
-        if frequency not in ("daily", "weekly"):
-            return jsonify({"error": "frequency must be 'daily' or 'weekly'"}), 400
 
-        target_days_per_week = int(payload.get("target_days_per_week", 7))
-        if target_days_per_week < 1 or target_days_per_week > 7:
-            return jsonify({"error": "target_days_per_week must be between 1 and 7"}), 400
+           result = HabitService.list_habits()
+           return jsonify(result)
+        habit = Habit(name=name)
+        db.add(habit)
 
-        # Create a new Habit instance with the data
-        habit = Habit(
-            id=payload["id"],  # Unique identifier for the habit
-            name=payload["name"],  # Name of the habit
-            description=payload.get("description", ""),  # Optional description
-            frequency=frequency,
-            target_days_per_week=target_days_per_week,
-            target_amount=float(payload.get("target_amount", 1.0)),
-            unit=payload.get("unit", "times"),
+        try:
+            db.commit()
+        except IntegrityError:
+            db.close()
+            return jsonify({"error": "Habit already exists"}), 400
+
+        result = {"id": habit.id, "name": habit.name}
+        return jsonify(result), 201
+
+           result = HabitService.create_habit(name)
+           if "error" in result:
+              return jsonify(result), 400
+           return jsonify(result), 201
+
+    # -------------------------
+    # MARK HABIT DONE TODAY
+    # -------------------------
+    @app.post("/habits/<habit_name>/done")
+    def mark_habit_done(habit_name):
+
+           result = HabitService.mark_done(habit_name)
+           if "error" in result:
+              return jsonify(result), 404
+           return jsonify(result)
+
+        if not habit:
+            db.close()
+            return jsonify({"error": "Habit not found"}), 404
+
+        today = date.today()
+
+           result = HabitService.delete_habit(habit_name)
+           if "error" in result:
+              return jsonify(result), 404
+           return jsonify(result)
+            db.query(HabitEntry)
+            .filter_by(habit_id=habit.id, date=today)
+            .first()
         )
-        # Add the new habit to the in-memory list
-        habits.append(habit)
-        # Return the created habit as JSON with HTTP 201 (Created) status
-        return jsonify(habit.__dict__), 201
 
-    # Delete habit endpoint
+        if existing:
+            db.close()
+            return jsonify({
+                "status": "already done",
+                "habit": habit_name,
+                "date": str(today)
+            })
 
-    # Create a new habit entry endpoint
+        entry = HabitEntry(
+            habit_id=habit.id,
+            date=today,
+            completed=True
+        )
+
+        db.add(entry)
+        db.commit()
+        db.close()
+
+        return jsonify({
+            "status": "ok",
+            "habit": habit_name,
+            "date": str(today)
+        })
+
+    # -------------------------
+    # DELETE HABIT (BY NAME)
+    # -------------------------
+    @app.delete("/habits/<habit_name>")
+    def delete_habit(habit_name):
+        db = SessionLocal()
+        habit = db.query(Habit).filter_by(name=habit_name).first()
+
+        if not habit:
+            db.close()
+            return jsonify({"error": "Habit not found"}), 404
+
+        db.delete(habit)
+        db.commit()
+        db.close()
+
+        return jsonify({"status": "deleted", "habit": habit_name})
+
+    # -------------------------
+    # MISSED HABITS (LAST 7 DAYS)
+    # -------------------------
+    @app.get("/habits/missed")
+    def get_missed_habits():
+        db = SessionLocal()
+        today = date.today()
+
+        habits = db.query(Habit).all()
+        missed = []
+
+        for habit in habits:
+            for i in range(7):
+                d = today - timedelta(days=i)
+
+                entry = (
+                    db.query(HabitEntry)
+                    .filter_by(habit_id=habit.id, date=d)
+                    .first()
+                )
+
+                if not entry:
+                    missed.append({
+                        "habit": habit.name,
+                        "date": str(d)
+                    })
+
+        db.close()
+        return jsonify(missed)
+
+    # -------------------------
+    # CREATE HABIT ENTRY (GENERIC)
+    # -------------------------
     @app.post("/habit_entries")
     def create_habit_entry():
-        # Get the JSON data from the request body
+        db = SessionLocal()
         payload = request.get_json(force=True)
-        next_id = max((getattr(entry, "id", 0) for entry in entries), default=0) + 1
-        # Create a new HabitEntry instance with the data
+
         entry = HabitEntry(
-            id=next_id,
-            habit_id=payload["habit_id"],  # Which habit this entry belongs to
-            date=payload["date"],  # Date of the entry
-            completed=payload["completed"],  # Whether the habit was completed
-            notes=payload.get("notes", ""),  # Optional notes
+            habit_id=payload["habit_id"],
+            date=payload["date"],
+            completed=payload.get("completed", False),
+            notes=payload.get("notes", ""),
             performed_amount=float(payload.get("performed_amount", 0.0)),
         )
-        # Add the new entry to the in-memory list
-        entries.append(entry)
-        # Return the created entry as JSON with HTTP 201 (Created) status
-        return jsonify(entry.__dict__), 201
 
-    # Delete one habit entry endpoint
+        db.add(entry)
+        db.commit()
+
+        result = {
+            "id": entry.id,
+            "habit_id": entry.habit_id,
+            "date": str(entry.date),
+            "completed": entry.completed,
+            "notes": entry.notes,
+            "performed_amount": entry.performed_amount,
+        }
+
+        db.close()
+        return jsonify(result), 201
+
+    # -------------------------
+    # DELETE HABIT ENTRY
+    # -------------------------
     @app.delete("/habit_entries/<int:entry_id>")
-    def delete_habit_entry(entry_id: int):
-        for index, entry in enumerate(entries):
-            if getattr(entry, "id", None) == entry_id:
-                del entries[index]
-                return "", 204
-        return jsonify({"error": "Habit entry not found"}), 404
+    def delete_habit_entry(entry_id):
+        db = SessionLocal()
+
+        entry = db.query(HabitEntry).filter_by(id=entry_id).first()
+
+        if not entry:
+            db.close()
+            return jsonify({"error": "Habit entry not found"}), 404
+
+        db.delete(entry)
+        db.commit()
+        db.close()
+
+        return "", 204
