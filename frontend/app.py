@@ -24,7 +24,6 @@ with open(_css_path) as _f:
 st.title("Changing your lifestyle, day by day 🌱")
 
 
-
 # Hent alle habits
 try:
     response = requests.get(f"{API_BASE}/habits")
