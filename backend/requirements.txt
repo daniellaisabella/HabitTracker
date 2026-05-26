@@ -1,8 +1,4 @@
 python-dotenv
 flask
-streamlit
-pytest
-ruff
-pyright
 requests
 psycopg2-binary

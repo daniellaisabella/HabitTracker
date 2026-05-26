@@ -49,6 +49,10 @@ docker-down:
 
 docker-ps:
 	@docker compose ps
+
+docker-seed:
+	@docker compose exec backend python -m backend.seed
+
 lint:
 	uv run ruff check --fix .
 

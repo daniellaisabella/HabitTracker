@@ -1,9 +1,10 @@
-from datetime import date
+from datetime import date, datetime
 class Habit:
     # __init__ (konstruktor) method to initialize the habit object, self er ligesom this i Java
-    def __init__ (self, id: int, name: str):
+    def __init__ (self, id: int, name: str, created_at: datetime):
         self.id = id
         self.name = name
+        self.created_at = created_at
 
     
 class HabitLog:

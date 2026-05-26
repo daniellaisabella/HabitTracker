@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&display=swap');
+
+html, body, p, h1, h2, h3, h4, h5, h6,
+button, input, textarea, label,
+.stMarkdown, .stText, .stCaption, .stButton {
+    font-family: 'Comfortaa', sans-serif !important;
+}
+
+.stButton button {
+    border: none;
+}

@@ -19,17 +19,18 @@ services:
     working_dir: /app
     volumes:
       - ./:/app
-    command: sh -c "pip install --no-cache-dir streamlit requests && streamlit run frontend/app.py --server.address=0.0.0.0 --server.port=8501"
+    command: sh -c "pip install --no-cache-dir -r frontend/requirements.txt && streamlit run frontend/app.py --server.address=0.0.0.0 --server.port=8501"
     environment:
-      - API_BASE=http://backend:5000
+      - API_BASE=${API_BASE}
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY}
     ports:
       - "8501:8501"
 
   db:
     image: postgres:14
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:

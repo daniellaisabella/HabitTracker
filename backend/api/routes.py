@@ -7,16 +7,16 @@ api_blueprint = Blueprint('api', __name__)
 @api_blueprint.route('/habits', methods=['GET'])
 def get_habits():
     habits = habit_service.get_all()
-    return jsonify([{"id": h.id, "name": h.name} for h in habits])
+    return jsonify([{"id": h.id, "name": h.name, "created_at": h.created_at.isoformat()} for h in habits])
 
 @api_blueprint.route('/habits', methods=['POST'])
 def create_habit():
     data = request.get_json()
-    try:
-        habit = habit_service.create(data['name'])
-        return jsonify({"id": habit.id, "name": habit.name}), 201
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
+    if not data or not data.get('name', '').strip():
+        return jsonify({"error": "name is required"}), 400
+    habit = habit_service.create(data['name'].strip())
+    return jsonify({"id": habit.id, "name": habit.name}), 201
+  
 
 @api_blueprint.route('/habits/<int:habit_id>', methods=['DELETE'])
 def delete_habit(habit_id):
@@ -36,6 +36,8 @@ def get_today(habit_id):
 @api_blueprint.route('/habits/<int:habit_id>/log', methods=['POST'])
 def log_habit(habit_id):
     data = request.get_json()
+    if not data or not data.get('log_date'):
+        return jsonify({"error": "log_date is required"}), 400
     habit_log_service.log_habit(habit_id, data['log_date'])
     return '', 201
 
