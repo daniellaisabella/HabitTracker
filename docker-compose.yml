@@ -1,7 +1,8 @@
 services:
   backend:
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
       - .env
     image: python:3.11-slim
@@ -9,8 +10,6 @@ services:
     volumes:
       - ./:/app
     command: sh -c "pip install --no-cache-dir -r backend/requirements.txt && python -m backend.main"
-    ports:
-      - "5000:5000"
 
   frontend:
     depends_on:
@@ -28,11 +27,14 @@ services:
 
   db:
     image: postgres:14
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
 

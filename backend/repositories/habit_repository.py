@@ -1,4 +1,4 @@
-from backend.models.models import Habit
+from backend.models.habit import Habit
 from backend.db import get_db_connection, release_connection
 
 def get_all():

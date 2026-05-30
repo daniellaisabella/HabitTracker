@@ -42,9 +42,11 @@ def plot_bar_chart(df: pd.DataFrame, num_habits: int = 1) -> Figure:
     labels = [d.strftime("%a\n%d/%m") for d in last_7]
 
     fig, ax = plt.subplots(figsize=(8, 4))
-    ax.bar(labels, counts, color="#AEF2B0")
+    fig.patch.set_facecolor("#F8FAF5")
+    ax.set_facecolor("#F8FAF5")
+    ax.bar(labels, counts, color="#52B788")
     ax.set_ylabel("Habits completed")
-    ax.set_title("Lasat 7 days")
+    ax.set_title("Last 7 days")
     ax.set_ylim(0, max(num_habits, 1) + 0.5)
     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     plt.tight_layout()

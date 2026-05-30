@@ -3,7 +3,7 @@ import requests
 import streamlit as st
 
 
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=86400)
 def get_ai_advice(rates: dict) -> str:
     api_key = os.getenv("MISTRAL_API_KEY")
     if not api_key:

@@ -34,6 +34,7 @@ df = build_dataframe(all_logs)
 # statistik
 rates = completion_rate(df, habits)
 
+
 st.caption("*You daily motivation*")
 if rates:
     with st.spinner("Generating advice..."):
@@ -44,7 +45,7 @@ if rates:
             st.warning(f"Could not load advice: {e}")
     st.caption("AI-generated advice. Always use your own judgement — no guarantee of accuracy.")
 
-st.divider()
+
 
 with st.expander("See your stats ❤️"):
     st.subheader("Your week in a glance")
@@ -55,36 +56,28 @@ with st.expander("See your stats ❤️"):
             st.progress(int(rate), text=f"{name}: {rate}%")
 
 
-st.divider()
 
-# liste af habits + done + delete
-for habit in habits:
+
+# liste af habits + done + delete (2 per række)
+grid_cols = st.columns(2)
+for i, habit in enumerate(habits):
     today = requests.get(f"{API_BASE}/habits/{habit['id']}/today").json()
     done_today = today["done"]
 
-    col1, col2, col3 = st.columns([4, 1, 1])
-
-    with col1:
-        if done_today:
-            st.success(f"✅ {habit['name']}")
-        else:
-            st.write(f"&nbsp;&nbsp;&nbsp;⬜️ {habit['name']}")
-    with col2:
-        if done_today:
-            if st.button("↩️ Undo", key=f"undo_{habit['id']}"):
-                requests.delete(f"{API_BASE}/habits/{habit['id']}/log/today")
+    with grid_cols[i % 2]:
+        inner_col1, inner_col2 = st.columns([4, 1], vertical_alignment="center")
+        with inner_col1:
+            label = f"✅ {habit['name']}" if done_today else f"⬜️ {habit['name']}"
+            if st.button(label, key=f"toggle_{habit['id']}", use_container_width=True):
+                if done_today:
+                    requests.delete(f"{API_BASE}/habits/{habit['id']}/log/today")
+                else:
+                    requests.post(f"{API_BASE}/habits/{habit['id']}/log", json={"log_date": date.today().isoformat()})
                 st.rerun()
-        else:
-            if st.button("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Done", key=f"done_{habit['id']}"):
-                requests.post(f"{API_BASE}/habits/{habit['id']}/log", json={
-                    "log_date": date.today().isoformat()
-                })
+        with inner_col2:
+            if st.button("🗑️", key=f"delete_{habit['id']}"):
+                requests.delete(f"{API_BASE}/habits/{habit['id']}")
                 st.rerun()
-
-    with col3:
-        if st.button("🗑️", key=f"delete_{habit['id']}"):
-            requests.delete(f"{API_BASE}/habits/{habit['id']}")
-            st.rerun()
 
 # add habit form
 with st.form("add_habit_form", clear_on_submit=True):

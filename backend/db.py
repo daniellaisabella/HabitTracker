@@ -33,7 +33,7 @@ def create_tables():
                    CREATE TABLE IF NOT EXISTS habits (
                    id SERIAL PRIMARY KEY,
                    name TEXT NOT NULL,
-                   created_at TIMESTAMP DEFAULT NOW()
+                   created_at DATE DEFAULT CURRENT_DATE
                    );
                      """)
     cursor.execute("""

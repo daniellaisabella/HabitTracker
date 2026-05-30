@@ -1,11 +1,40 @@
-@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap');
 
 html, body, p, h1, h2, h3, h4, h5, h6,
 button, input, textarea, label,
 .stMarkdown, .stText, .stCaption, .stButton {
-    font-family: 'Comfortaa', sans-serif !important;
+    font-family: 'DM Sans', sans-serif !important;
+}
+
+h1 {
+    font-family: 'DM Serif Display', serif !important;
+    font-weight: 400 !important;
+    color: #2D4A3E !important;
+    letter-spacing: -0.5px;
 }
 
 .stButton button {
     border: none;
+    border-radius: 12px !important;
+    font-weight: 500 !important;
+    transition: opacity 0.15s ease;
 }
+
+.stButton button:hover {
+    opacity: 0.85;
+}
+
+.stProgress > div > div {
+    border-radius: 99px !important;
+}
+
+.stTextInput input {
+    border-radius: 12px !important;
+    border: 1.5px solid #c2dcc9 !important;
+}
+
+.stTextInput input:focus {
+    border-color: #52B788 !important;
+    box-shadow: 0 0 0 2px rgba(82, 183, 136, 0.15) !important;
+}
+

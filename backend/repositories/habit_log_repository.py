@@ -1,6 +1,6 @@
 from backend.db import get_db_connection, release_connection
 from datetime import date
-from backend.models.models import HabitLog
+from backend.models.habit_log import HabitLog
 
 def create(habit_id: int, log_date: date):
     connection = get_db_connection()
@@ -20,7 +20,7 @@ def get_last_7_days(habit_id: int):
                        SELECT id, habit_id, log_date
                        FROM habit_log
                        WHERE habit_id = %s
-                       AND log_date >= CURRENT_DATE - INTERVAL '7 days'
+                       AND log_date >= CURRENT_DATE - INTERVAL '6 days'
                        """, (habit_id,))
         rows = cursor.fetchall()
         cursor.close()

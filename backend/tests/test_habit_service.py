@@ -2,7 +2,7 @@ from unittest.mock import patch
 from datetime import datetime
 import pytest
 from backend.services import habit_service
-from backend.models.models import Habit
+from backend.models.habit import Habit
 
 
 @patch("backend.services.habit_service.habit_repository")
