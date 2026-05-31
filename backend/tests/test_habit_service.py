@@ -5,6 +5,7 @@ from backend.services import habit_service
 from backend.models.habit import Habit
 
 
+# Test: create returnerer Habit objekt fra repo
 @patch("backend.services.habit_service.habit_repository")
 def test_create_returns_habit(mock_repo):
     mock_habit = Habit(id=1, name="Sport", created_at=datetime.now())
@@ -14,11 +15,13 @@ def test_create_returns_habit(mock_repo):
     assert result is mock_habit
 
 
+# Test: tomt navn kaster ValueError
 def test_create_raises_on_empty_name():
     with pytest.raises(ValueError):
         habit_service.create("")
 
 
+# Test: get_all delegerer til repo og returnerer liste
 @patch("backend.services.habit_service.habit_repository")
 def test_get_all_delegates(mock_repo):
     mock_repo.get_all.return_value = []
@@ -27,6 +30,7 @@ def test_get_all_delegates(mock_repo):
     assert result == []
 
 
+# Test: delete delegerer til repo med korrekt habit_id
 @patch("backend.services.habit_service.habit_repository")
 def test_delete_delegates(mock_repo):
     habit_service.delete(42)

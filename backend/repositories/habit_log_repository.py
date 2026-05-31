@@ -2,15 +2,6 @@ from backend.db import get_db_connection, release_connection
 from datetime import date
 from backend.models.habit_log import HabitLog
 
-def create(habit_id: int, log_date: date):
-    connection = get_db_connection()
-    try:
-        cursor = connection.cursor()
-        cursor.execute("INSERT INTO habit_log (habit_id, log_date) VALUES (%s, %s)", (habit_id, log_date))
-        connection.commit()
-        cursor.close()
-    finally:
-        release_connection(connection)
 
 def get_last_7_days(habit_id: int):
     connection = get_db_connection()
@@ -27,6 +18,23 @@ def get_last_7_days(habit_id: int):
         return [HabitLog(id=row[0], habit_id=row[1], log_date=row[2]) for row in rows]
     finally:
         release_connection(connection)
+        
+        
+def create(habit_id: int, log_date: date):
+    connection = get_db_connection()
+    try:
+        cursor = connection.cursor()
+        cursor.execute("""
+            INSERT INTO habit_log (habit_id, log_date)
+            VALUES (%s, %s)
+            ON CONFLICT (habit_id, log_date) DO NOTHING 
+        """, (habit_id, log_date))
+
+        connection.commit()
+        cursor.close()
+    finally:
+        release_connection(connection)
+
 
 def get_today(habit_id: int):
     connection = get_db_connection()

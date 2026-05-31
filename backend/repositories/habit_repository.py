@@ -1,6 +1,7 @@
 from backend.models.habit import Habit
 from backend.db import get_db_connection, release_connection
 
+#bruger psycopg2 metoder til at interagere med db
 def get_all():
     connection = get_db_connection()
     try:
@@ -8,6 +9,7 @@ def get_all():
         cursor.execute("SELECT id, name, created_at FROM habits")
         rows = cursor.fetchall()
         cursor.close()
+        # list comprehension- python laver en liste for rows
         return [Habit(id=row[0], name=row[1], created_at=row[2]) for row in rows]
     finally:
         release_connection(connection)

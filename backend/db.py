@@ -19,7 +19,7 @@ def init_pool():
 def get_db_connection():
     if _pool is None:
         raise RuntimeError("Database pool is not initialized. Call init_pool() first.")
-    return _pool.getconn()
+    return _pool.getconn() # dette er psycopg2 metode til at få connection fra poolen
 
 def release_connection(conn):
     if _pool is not None:
@@ -40,7 +40,8 @@ def create_tables():
                    CREATE TABLE IF NOT EXISTS habit_log (
                    id SERIAL PRIMARY KEY,
                    habit_id INTEGER REFERENCES habits(id) ON DELETE CASCADE,
-                   log_date DATE NOT NULL
+                   log_date DATE NOT NULL,
+                   UNIQUE (habit_id, log_date)
                    );
                      """)
 
