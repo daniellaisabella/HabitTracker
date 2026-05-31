@@ -53,6 +53,9 @@ docker-ps:
 docker-seed:
 	@docker compose exec backend python -m backend.seed
 
+docker-db:
+	@docker compose exec db psql -U postgres
+	
 lint:
 	uv run ruff check --fix .
 
