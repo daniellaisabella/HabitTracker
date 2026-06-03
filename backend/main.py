@@ -5,8 +5,9 @@ from backend.api.habit_log_routes import habit_log_blueprint
 from backend.error_handlers import register_error_handlers
 from backend.db import init_pool, create_tables
 
-app = Flask(__name__) # sætter flask app til at finde ressourcer her i backend mappe
-app.register_blueprint(habit_blueprint) # flask funktion til at add disse filer som routes i appen, den ved intet om route filer, fordi appen er blank
+###### opretter flask instans og registrerer blueprints, error handlers og database forbindelse ######
+app = Flask(__name__) 
+app.register_blueprint(habit_blueprint) 
 app.register_blueprint(habit_log_blueprint)
 
 init_pool() #åbner én fælles forbindelse til db
