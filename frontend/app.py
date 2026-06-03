@@ -3,7 +3,7 @@ import streamlit as st
 import requests
 from datetime import date
 
-from stats import build_dataframe, completion_rate, plot_bar_chart
+from stats import build_dataframe, completion_rate, completion_mean, plot_bar_chart
 from ai_advice import get_ai_advice
 
 API_BASE = os.getenv("API_BASE", "http://backend:5000") #api base fra .env filen, eller fall back 5000
@@ -67,6 +67,8 @@ with st.expander("See your stats ❤️"):
     st.pyplot(plot_bar_chart(df, num_habits=len(habits)))
     if rates:
         st.subheader("Completion rate last 7 days")
+        summary = completion_mean(rates)
+        st.metric("Average completion rate", f"{float(summary['mean'])}%")
         # for loop over rates dict
         for name, rate in rates.items():
             # streamlit progress bar tager int værdi mellem 0 og 100

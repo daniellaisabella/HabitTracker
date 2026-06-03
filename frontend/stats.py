@@ -43,6 +43,12 @@ def completion_rate(df: pd.DataFrame, habits: list) -> dict:
             rates[name] = float(np.round(completed / days_active * 100, 1))
     return rates
 
+def completion_mean(rates: dict) -> dict:
+    values = np.array(list(rates.values()))
+    return {
+        "mean": float(np.round(np.mean(values),1))
+    }
+
 
 # mdtager df med alle logs, =1 er fall backs hvis der ik er nogle habits, returner en figure
 def plot_bar_chart(df: pd.DataFrame, num_habits: int = 1) -> Figure:

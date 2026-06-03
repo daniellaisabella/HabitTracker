@@ -1,8 +1,8 @@
 import backend.repositories.habit_repository as habit_repository
 
 def create(name:str):
-    if not name:    
-        raise ValueError("Write your desired habit")
+    if not name:
+        raise ValueError("Name is required")
     return habit_repository.create(name)
 
 def get_all():

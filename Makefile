@@ -1,13 +1,11 @@
 SHELL := powershell.exe
 .SHELLFLAGS := -NoProfile -ExecutionPolicy Bypass -Command
 
-PYTHON := .\.venv\Scripts\python.exe
-
 .PHONY: help install backend frontend run docker-build docker-up docker-down docker-logs docker-ps
 
 help:
 	@Write-Host "Targets:"
-	@Write-Host "  make install      - Install dependencies in .venv"
+	@Write-Host "  make install      - Install dependencies with uv sync"
 	@Write-Host "  make backend      - Start Flask backend (port 5000)"
 	@Write-Host "  make frontend     - Start Streamlit frontend (port 8501)"
 	@Write-Host "  make run          - Start backend + frontend in separate windows"
@@ -18,21 +16,17 @@ help:
 	@Write-Host "  make docker-ps    - Show Docker Compose service status"
 
 install:
-	@if (-not (Test-Path "$(PYTHON)")) { throw "Missing .venv. Create it first: python -m venv .venv" }
-	@& "$(PYTHON)" -m pip install -r requirements.txt
+	uv sync
 
 backend:
-	@if (-not (Test-Path "$(PYTHON)")) { throw "Missing .venv. Create it first: python -m venv .venv" }
-	@& "$(PYTHON)" -m backend.main
+	uv run python -m backend.main
 
 frontend:
-	@if (-not (Test-Path "$(PYTHON)")) { throw "Missing .venv. Create it first: python -m venv .venv" }
-	@& "$(PYTHON)" -m streamlit run frontend/app.py
+	uv run streamlit run frontend/app.py
 
 run-local:
-	@if (-not (Test-Path "$(PYTHON)")) { throw "Missing .venv. Create it first: python -m venv .venv" }
-	@Start-Process -FilePath "$(PYTHON)" -ArgumentList "-m","backend.main"
-	@Start-Process -FilePath "$(PYTHON)" -ArgumentList "-m","streamlit","run","frontend/app.py"
+	@Start-Process -FilePath "uv" -ArgumentList "run","python","-m","backend.main"
+	@Start-Process -FilePath "uv" -ArgumentList "run","streamlit","run","frontend/app.py"
 	@Write-Host "Backend started on http://127.0.0.1:5000"
 	@Write-Host "Frontend started on http://localhost:8501"
 
@@ -60,7 +54,7 @@ lint:
 	uv run ruff check --fix .
 
 test:
-	uv run pytest backend/tests
+	uv run pytest
 
 typecheck:
 	uv run pyright
