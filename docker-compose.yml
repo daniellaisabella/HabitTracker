@@ -5,20 +5,20 @@ services:
         condition: service_healthy
     env_file:
       - .env
-    image: python:3.11-slim
+    image: ghcr.io/astral-sh/uv:python3.11-bookworm-slim
     working_dir: /app
     volumes:
       - ./:/app
-    command: sh -c "pip install --no-cache-dir -r backend/requirements.txt && python -m backend.main"
+    command: sh -c "uv sync --system --no-dev && python -m backend.main"
 
   frontend:
     depends_on:
       - backend
-    image: python:3.11-slim
+    image: ghcr.io/astral-sh/uv:python3.11-bookworm-slim
     working_dir: /app
     volumes:
       - ./:/app
-    command: sh -c "pip install --no-cache-dir -r frontend/requirements.txt && streamlit run frontend/app.py --server.address=0.0.0.0 --server.port=8501"
+    command: sh -c "uv sync --system --no-dev && streamlit run frontend/app.py --server.address=0.0.0.0 --server.port=8501"
     environment:
       - API_BASE=${API_BASE}
       - MISTRAL_API_KEY=${MISTRAL_API_KEY}

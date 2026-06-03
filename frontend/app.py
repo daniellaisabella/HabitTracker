@@ -103,6 +103,7 @@ for i, habit in enumerate(habits):
                     st.session_state.today_cache[habit["id"]] = True
                 # invalider logs cache for denne habit så stats opdateres
                 st.session_state.logs_cache.pop(habit["id"], None)
+                # rerun for at opdatere den log cache med det nye log og dermed opdatere stats delen
                 st.rerun()
 
 # add habit form

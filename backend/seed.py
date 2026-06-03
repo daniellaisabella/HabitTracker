@@ -16,7 +16,9 @@ def seed():
 
     for name in habits:
         cursor.execute("INSERT INTO habits (name, created_at) VALUES (%s, NOW() - INTERVAL '7 days') RETURNING id", (name,))
-        habit_ids.append(cursor.fetchone()[0])
+        row = cursor.fetchone()
+        assert row is not None
+        habit_ids.append(row[0])
 
     # opret logs for de sidste 7 dage
     for habit_id in habit_ids:

@@ -3,16 +3,34 @@ name = "habit-tracker"
 version = "0.1.0"
 description = "A habit tracker app"
 requires-python = ">=3.11"
+dependencies = [
+    "flask",
+    "requests",
+    "psycopg2-binary>=2.9",
+    "python-dotenv>=1.0",
+    "streamlit",
+    "pandas",
+    "numpy",
+    "matplotlib",
+]
 
 [tool.uv]
 
 [dependency-groups]
 dev = [
     "pre-commit>=4.6.0",
-    "pyright>=1.1.409",
+    "pyright>=1.1.410",
     "pytest>=9.0.3",
     "ruff>=0.15.12",
-    "psycopg2-binary>=2.9",
-    "python-dotenv>=1.0",
 ]
-# uv-specific settings can go here
+
+[tool.ruff]
+exclude = [".venv"]
+
+[tool.pyright]
+exclude = [".venv"]
+venvPath = "."
+venv = ".venv"
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]

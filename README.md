@@ -3,8 +3,7 @@
 This is a web application for tracking habits, built with a Python backend (Flask) and a Streamlit frontend.
 
 ## Features
-- Track daily habits and entries
-- User management
+- Track daily habits and logs
 - Modern Python tooling (uv, ruff, pytest, pyright, pre-commit)
 - Dockerized for easy deployment
 

@@ -51,6 +51,3 @@ make typecheck
    ```bash
    make docker-down
    ```
-
----
-For more details, see comments in the Makefile and docker-compose.yml.
