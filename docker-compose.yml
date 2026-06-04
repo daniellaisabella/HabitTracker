@@ -48,4 +48,3 @@ volumes:
   db_data:
   backend-venv:
   frontend-venv:
-

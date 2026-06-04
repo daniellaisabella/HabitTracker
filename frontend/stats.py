@@ -41,12 +41,13 @@ def completion_mean(rates: dict) -> float:
 def plot_bar_chart(df: pd.DataFrame, num_habits: int = 1) -> Figure:
     today = date.today()
     
-    # genererer en liste af de sidste 7 dage, inklusiv i dag, i formatet date
+    # genererer en liste af de sidste 7 date objekter, inklusiv i dag, i formatet date (timedelta 1 = i går)
     last_7 = [today - timedelta(days=i) for i in range(6, -1, -1)]
 
     if df.empty:
         counts = [0] * 7
     else:
+        # liste af count per dag
         counts = [int((df["log_date"] == d).sum()) for d in last_7]
 
     # formaterer dato til labels skrevet som en str

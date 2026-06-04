@@ -3,7 +3,7 @@ from datetime import date
 from frontend.stats import completion_rate
 
 
-# 
+# test completion rate function
 def test_full_completion_rate():
     today = date.today()
     logs = [{"habit_id": 1, "log_date": today}]

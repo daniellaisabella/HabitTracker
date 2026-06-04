@@ -87,5 +87,10 @@ with st.form("add_habit_form", clear_on_submit=True):
     submitted = st.form_submit_button("Add Habit")
 
     if submitted and new_habit:
-        requests.post(f"{API_BASE}/habits", json={"name": new_habit})
-        st.rerun()
+        response = requests.post(f"{API_BASE}/habits", json={"name": new_habit})
+        if response.ok:
+            st.rerun()
+        else:
+            st.error(response.json().get("error", "Something went wrong."))
+    elif submitted:
+        st.warning("Habit name cannot be empty.")

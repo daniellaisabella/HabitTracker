@@ -9,6 +9,6 @@ def register_error_handlers(app):
     def handle_404(e):
         return jsonify({"error": "Not found"}), 404
 
-    @app.errorhandler(ValueError)
-    def handle_value_error(e):
-        return jsonify({"error": str(e)}), 400
+    @app.errorhandler(400)
+    def handle_400(e):
+        return jsonify({"error": "Bad request"}), 400
