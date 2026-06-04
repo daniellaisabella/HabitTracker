@@ -49,7 +49,7 @@ if rates:
 
 ################### STATS ####################
 
-with st.expander("See your stats ❤️"):
+with st.expander("See your statistics ❤️"):
     st.subheader("Your week in a glance")
     st.pyplot(plot_bar_chart(df, num_habits=len(habits)))
     if rates:
